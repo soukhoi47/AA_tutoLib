@@ -1,0 +1,56 @@
+************************************************************
+		Personalisation de Sublime text 2			
+************************************************************
+
+************************************************************
+Installation de Package Control
+************************************************************
+#Package permettant de gérer les plugins
+#Afficher la console de Sublime Text
+
+ctrl+`
+
+#Exécuter le code suivant dans la console : 
+
+import urllib2,os; pf='Package Control.sublime-package'; ipp=sublime.installed_packages_path(); os.makedirs(ipp) if not os.path.exists(ipp) else None; urllib2.install_opener(urllib2.build_opener(urllib2.ProxyHandler())); open(os.path.join(ipp,pf),'wb').write(urllib2.urlopen('http://sublime.wbond.net/'+pf.replace(' ','%20')).read()); print 'Please restart Sublime Text to finish installation'
+
+#Pour plus d'information aller sur http://wbond.net/sublime_packages/package_control/installation
+
+************************************************************
+Liste de Plugins utiles
+************************************************************
+
+ColorHighlighter  | pour afficher les couleurs CSS dans la source en highlight quand on les focus
+ColorPicker       | pour afficher la palette couleur système et obtenir le code #hexa avec Ctrl+Shift+C.
+Sublime Linter    | pour surligner les erreurs dans le code Python (import inutilisés, variables non déclarées)
+Sublime Alignment | pour aligner plusieurs lignes ou sélections sur une même colonne en insérant des espaces ou tabs
+Sublime Terminal  | raccourcis et menus pour ouvrir un terminal dans le dossier courant
+Sublime GitHub    | intégration de GitHub
+Sublime-text-2-git| intégration de git indépendament du serveur
+SublimeAutoPEP8   | Python PEP8 Autoformat is a Sublime Text 2 plug-in to interactively reformat Python source code according to PEP8 (Style Guide for Python Code)
+ ublimeRope       | autocompletion pour Python à partir de la librairie ROPE voir https://github.com/JulianEberius/SublimeRope pour l'usage.
+
+
+************************************************************
+Raccourcis
+************************************************************
+Ctrl + Shift + P         : Commandes                                          
+Ctrl + P                 : Accès rapide aux fichiers                                  
+Ctrl + G                 : Accès au numéro de ligne                                   
+Ctrl + R                 : Accès direct par terme (par ex liste des sélecteurs en CSS)
+Ctrl + Shift + D         : Dupliquer une ligne                                
+Ctrl + Shift + F         : Recherche dans les fichiers du projet              
+Ctrl + H                 : Remplacer                                                  
+Ctrl + X                 : Supprimer la ligne                                         
+Ctrl + Shift + /         : Mettre en commentaires (PHP, HTML, …)              
+Ctrl + D                 : Sélectionner l’occurrence identique suivante               
+Alt + F3                 : Sélectionner toutes les occurrences (génial !)             
+Ctrl + Shift + M         : Sélectionner tout entre les parenthèses/accolades  
+Ctrl + PageUp/PageDown : Se déplacer dans les onglets
+Ctrl + Shift + T         : Réouvrir le dernier onglet fermé
+Alt + Shift + 1/2/3/4/5  : Vues splittées
+Ctrl + F2                : Placer un signet
+F2                       : Aller au signet suivant
+Ctrl + KU                : Met le texte sélectionné en uppercase
+Ctrl + KL                : Met le texte sélectionné en lowercase
+F9                       : tri par ordre alphabétique

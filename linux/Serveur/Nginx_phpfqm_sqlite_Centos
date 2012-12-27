@@ -1,0 +1,123 @@
+************************************************************
+	NGinx + php-fqm + SQLite Installation & Setup CentOS						
+************************************************************
+
+************************************************************
+	Installation
+************************************************************
+
+#Use the auto Install script 
+wget 
+chmod u+X
+./nginxautoinstall_CentOS.sh
+
+************************************************************
+	Configuration
+************************************************************
+#By default, php only allowed the upload of files with size less than 2Mo. 
+#To change this limitation modify the next key values in /etc/php.ini 
+
+post_max_size = 1000M
+upload_max_filesize = 1000M
+
+#To configure a new website, add a file in the next folder :  /etc/nginx/sites-enabled/owncloud
+
+EXAMPLE:
+server {
+
+	listen 80;
+
+	server_name cloud.mondomaine.com;
+
+	root /var/www/owncloud;
+
+	client_max_body_size 1000M;
+
+	index index.php;
+
+	dav_methods PUT DELETE MKCOL COPY MOVE;
+
+	create_full_put_path on;
+
+	dav_access user:rw group:rw all:r;
+
+	try_files $uri $uri/ @webdav;
+
+	location @webdav {
+
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+		include fastcgi_params;
+
+		fastcgi_pass 127.0.0.1:9000;
+
+	}
+
+# PHP scripts -&gt; PHP-FPM server listening on 127.0.0.1:9000
+
+	location ~ \.php$ {
+
+		try_files $uri =404;
+
+		fastcgi_pass 127.0.0.1:9000;
+
+		fastcgi_index index.php;
+
+		include fastcgi_params;
+
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+	}
+
+# Stuffs
+
+	location = /favicon.ico {
+
+		access_log off;
+
+		return 204;
+
+	}
+
+# Protect hidden file to read/write access
+
+	location ~ /\. {
+
+		deny all;
+
+	}
+
+}
+
+************************************************************
+	Others
+************************************************************
+#install php-mbstring
+
+#restart php-fqm
+/etc/init.d/php-fpm restart
+#reload nginx config
+/etc/init.d/nginx reload
+#restart nginx
+service nginx restart
+#list php modules
+rpm -qa | grep php
+
+
+#autostart php-fqm on startup
+chkconfig --add php-fpm
+chkconfig --levels 235 php-fpm on
+
+#to know the user proprietary of a process
+ps -ef | grep php | grep -v grep
+
+displayandexec "Install SQLiteManager" $YUM_EXEC install --enablerepo=remi sqlitemanager
+
+
+add to php.ini
+
+extension=memcache.so
+extension=apc.so
+

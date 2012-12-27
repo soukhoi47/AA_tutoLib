@@ -1,0 +1,122 @@
+************************************************************
+			Samba Installation & Setup CentOS						
+************************************************************
+
+************************************************************
+	Installation
+************************************************************
+#installation de samba et samba-common
+yum install samba
+#lancement du daemon au démarrage
+chkconfig –level 2345 smb on
+
+
+************************************************************
+	User account
+************************************************************
+create user account for the samba users with
+useradd et passwd
+
+create specifics password for samba
+smbpasswd -a <username>
+
+************************************************************
+	Configuration
+************************************************************
+modify the smb.conf file to setup the sharing 
+
+vim /etc/samba/smb.conf
+
+modify the following key values:
+workgroup = WORKGROUPNAME 
+server string = BRIEF COMMENT ABOUT SERVER
+interfaces = <eth0>
+bind interfaces only = yes
+
+to share a folder add the group
+[<nm_partage>]
+        path = </path/to/shared/folder>
+        browseable = yes
+        guest ok = no
+        writable = yes
+        create mask = 777
+        directory mask = 777
+        force create mask = 777
+        valid users = <username>
+        write list = <username>
+
+use the next command to verify smb.conf 
+testparm /etc/samba/smb.conf
+
+
+restart smb et nmb
+service smb restart
+service nmb restart
+
+************************************************************
+	Opening Up The Firewall
+************************************************************
+SAMBA uses ports 137 – 139 and 445:
+(Old system)
+    Port 137 – UDP NetBIOS name service (WINS)
+    Port 138 – UDP NetBIOS datagram
+    Port 139 – TCP NetBIOS Session (TCP), Windows File and Printer 
+	Sharing (this is the most insecure port)
+(Active Directory)
+    Port 445 - Microsoft-DS Active Directory, Windows shares (TCP)
+    Port 445 - Microsoft-DS SMB file sharing (UDP) 
+
+
+add the next part to your /etc/sysconfig/iptables
+
+-A INPUT -m state --state NEW -m udp -p udp --dport 137 -j ACCEPT
+-A INPUT -m state --state NEW -m udp -p udp --dport 138 -j ACCEPT
+-A INPUT -m state --state NEW -m udp -p udp --dport 137 -j ACCEPT
+-A INPUT -m state --state NEW -m udp -p udp --dport 138 -j ACCEPT
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 139 -j ACCEPT
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 445 -j ACCEPT
+
+
+************************************************************
+	SELinux configuration
+************************************************************
+SELinux prevents any viewing of a share automatically as a security feature.
+The setsebool command switches on and off the protection of SELinux. You can 
+get a complete list with getsebool -a. It is pointed out since newer versions
+will add more security features. 
+
+getsebool -a | grep samba
+getsebool -a | grep smb
+
+If you want to share the default home directory, type this command:
+setsebool -P samba_enable_home_dirs on
+
+To allow the access to the shared directories use
+
+semanage fcontext -a -t samba_share_t '/<shared path>'
+restorecon -R /<shared path>
+
+without that you will have a bunch of blank directories
+
+
+you can also use the next bash
+################################################################
+#!/bin/bash
+tbl_path_fld=('/<shared path>' '/<shared path>' '/<shared path>')
+
+for var in  ${tbl_path_fld[@]};
+do
+        echo $var
+        semanage fcontext -a -t samba_share_t $var
+        restorecon -R $var
+done
+################################################################      
+
+************************************************************
+	How to use smb with linux
+************************************************************
+apt-get install smbclient smbfs
+
+smbclient -L <samba server ip adress>
+
+mount -t smbfs -o username=<login>,password=<password> <//path.to/share/folder> </path/to/mount/>
